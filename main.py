@@ -1,7 +1,8 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ChatJoinRequestHandler, ContextTypes
 
-TOKEN = "8604991777:AAF2fmRAC-utZBBFDfkkx4R2yKvULXtBYjc"
+import os
+TOKEN = os.getenv("TOKEN")
 
 # File penyimpanan
 FILE_NAME = "users.txt"
