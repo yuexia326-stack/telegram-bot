@@ -4,19 +4,18 @@ from telegram.ext import ApplicationBuilder, ChatJoinRequestHandler, ContextType
 
 TOKEN = os.getenv("TOKEN")
 
+# 🔥 ISI NANTI SETELAH DAPET ID
 CHAT_IDS = []
 
 FILE_NAME = "users.txt"
 
-# Load data
 def load_users():
     try:
         with open(FILE_NAME, "r") as f:
             return set(int(line.strip()) for line in f)
-    except FileNotFoundError:
+    except:
         return set()
 
-# Save user
 def save_user(user_id):
     with open(FILE_NAME, "a") as f:
         f.write(f"{user_id}\n")
@@ -34,12 +33,14 @@ async def auto_filter(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if username is None:
         await context.bot.decline_chat_join_request(chat_id, user_id)
         print(f"{user.full_name} ditolak (tidak ada username)")
+        print(chat_id)
         return
 
     # ❌ Sudah pernah masuk
     if user_id in users:
         await context.bot.decline_chat_join_request(chat_id, user_id)
         print(f"{user.full_name} ditolak (sudah pernah masuk)")
+        print(chat_id)
         return
 
     # ✅ Approve
@@ -47,12 +48,17 @@ async def auto_filter(update: Update, context: ContextTypes.DEFAULT_TYPE):
     save_user(user_id)
     await context.bot.approve_chat_join_request(chat_id, user_id)
     print(f"{user.full_name} di-approve (pertama kali)")
+    print(chat_id)
 
 
-# 🔥 HANDLE PENDING LAMA (SEMUA CHANNEL)
+# 🔥 HANDLE PENDING (AMAN, NGGAK ERROR WALAU KOSONG)
 async def handle_pending(app):
-    try:
-        for chat_id in CHAT_IDS:
+    if not CHAT_IDS:
+        print("CHAT_ID belum diisi")
+        return
+
+    for chat_id in CHAT_IDS:
+        try:
             requests = await app.bot.get_chat_join_requests(chat_id)
 
             for req in requests:
@@ -62,12 +68,12 @@ async def handle_pending(app):
 
                 if username is None:
                     await app.bot.decline_chat_join_request(chat_id, user_id)
-                    print(f"{user.full_name} ditolak (pending, no username)")
+                    print(f"{user.full_name} ditolak (pending)")
                     continue
 
                 if user_id in users:
                     await app.bot.decline_chat_join_request(chat_id, user_id)
-                    print(f"{user.full_name} ditolak (pending, sudah pernah masuk)")
+                    print(f"{user.full_name} ditolak (pending lama)")
                     continue
 
                 users.add(user_id)
@@ -75,16 +81,13 @@ async def handle_pending(app):
                 await app.bot.approve_chat_join_request(chat_id, user_id)
                 print(f"{user.full_name} di-approve (pending lama)")
 
-    except Exception as e:
-        print("Error handle pending:", e)
+        except Exception as e:
+            print("Error:", e)
 
 
-# 🚀 RUN BOT
+# 🚀 RUN
 app = ApplicationBuilder().token(TOKEN).build()
-
 app.add_handler(ChatJoinRequestHandler(auto_filter))
-
-# jalanin saat start
 app.post_init = handle_pending
 
 print("Bot jalan... 💀")
