@@ -5,7 +5,9 @@ from telegram.ext import ApplicationBuilder, ChatJoinRequestHandler, ContextType
 TOKEN = os.getenv("TOKEN")
 
 # 🔥 ISI NANTI SETELAH DAPET ID
-CHAT_IDS = []
+CHAT_IDS = [
+    -1002272523861
+]
 
 FILE_NAME = "users.txt"
 
