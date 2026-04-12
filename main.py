@@ -92,3 +92,4 @@ app.post_init = handle_pending
 
 print("Bot jalan... 💀")
 app.run_polling()
+
