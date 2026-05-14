@@ -14,11 +14,11 @@ TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 CHANNELS = {
     "nocturne": {
         "name": "Nocturne",
-        "id": -1002272523861  # Nocturne ✔️
+        "id": -1002272523861
     },
     "twotiger": {
         "name": "Two Tiger To Close",
-        "id": -1001703082318  # Two Tiger To Close ✔️
+        "id": -1001703082318
     }
 }
 
@@ -89,10 +89,10 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
 
     if update.message:
-    await update.message.reply_text(
-        "📊 Pilih channel:",
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
+        await update.message.reply_text(
+            "📊 Pilih channel:",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
 
 # === BUTTON HANDLER ===
 async def stats_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -120,10 +120,19 @@ async def stats_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.edit_message_text(text)
 
+# === START COMMAND ===
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message:
+        await update.message.reply_text(
+            "Hai! 👋\n\n"
+            "Gunakan /stats untuk melihat statistik channel 📊"
+        )
+
 # === RUN ===
 app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(ChatJoinRequestHandler(auto_filter))
+app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("stats", stats))
 app.add_handler(CallbackQueryHandler(stats_button))
 
