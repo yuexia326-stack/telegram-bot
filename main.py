@@ -88,6 +88,7 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
     ]
 
+    if update.message:
     await update.message.reply_text(
         "📊 Pilih channel:",
         reply_markup=InlineKeyboardMarkup(keyboard)
